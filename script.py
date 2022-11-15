@@ -1,7 +1,6 @@
 import requests
 
 ROOT_URL = "https://api.purpleair.com/v1/sensors"
-TEMP_SENSOR_IDXS = []
 API_KEY = ""
 
 
@@ -79,16 +78,23 @@ def get_aqi_from_pm(pm, humidity):
     else:
         return None
 
-
-def get_sensor_indices():
+def get_location_bounds():
     """
-    Returns relevant sensors for analysis.
+    Grab longitude/latitude bounds to determine which sensors are relevant via
+        user input.
     
-    :returns: list of sensor indices
+    :returns: 4-tuple of (north west longitude, north west latitude,
+                          south east longitude, south east latitude)
     """
-    return TEMP_SENSOR_IDXS
 
-def generate_request_url(sensor_idx_arr):
+    nwlng = input("Enter your north west longitude bound: ")
+    nwlat = input("Enter your north west latitude bound: ")
+    selng = input("Enter your south east longitude bound: ")
+    selat = input("Enter your south east latitude bound: ")
+
+    return (nwlng, nwlat, selng, selat)
+
+def generate_request_url(lng_lat_bounds):
     """
     Generate request URL.
     
@@ -103,12 +109,11 @@ def generate_request_url(sensor_idx_arr):
     # grab raw pm2.5 data real time
     ret_url += "&fields=name,pm2.5_atm,humidity"
 
-    # filter for relevant sensors
-    ret_url += "&show_only="
-    for i in range(len(sensor_idx_arr)):
-        if i != 0:
-            ret_url += "%2C"
-        ret_url += str(sensor_idx_arr[i])
+    # filter for relevant sensors via longitude/latitude bounds
+    ret_url += "&nwlng=" + str(lng_lat_bounds[0])
+    ret_url += "&nwlat=" + str(lng_lat_bounds[1])
+    ret_url += "&selng=" + str(lng_lat_bounds[2])
+    ret_url += "&selat=" + str(lng_lat_bounds[3])
 
     return ret_url
 
@@ -142,9 +147,8 @@ def main():
     """
     Main function.
     """
-    sensors = get_sensor_indices()
-    
-    req_url = generate_request_url(sensors)
+    lng_lat_bounds = get_location_bounds()
+    req_url = generate_request_url(lng_lat_bounds)
     response = requests.get(req_url)
 
     # got expected response
