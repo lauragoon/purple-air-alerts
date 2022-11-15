@@ -1,4 +1,4 @@
-# PurpleAir Alerts
+# PurpleAir Alerts 🌥️
 Get alerts when your nearest PurpleAir sensor(s) reachers a certain air quality index (AQI) threshold.
 
 ## How to run this
