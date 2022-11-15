@@ -1,0 +1,8 @@
+base64
+email
+os
+requests
+google.auth
+google.oauth2
+google_auth_oauthlib
+googleapiclient
