@@ -6,15 +6,35 @@ API_KEY = ""
 
 
 def calculate_aqi(cp, ih, il, bph, bpl):
-    # https://forum.airnowtech.org/t/the-aqi-equation
-
+    """
+    Helper function to calculate air quality index (AQI) given raw values.
+    Uses equation from https://forum.airnowtech.org/t/the-aqi-equation.
+    
+    :param cp: input concentration for a given pollutant 
+    :param ih: AQI value/breakpoint corresponding to bph
+    :param il: AQI value/breakpoint corresponding to bpl
+    :param bph: concentration breakpoint that is greater than or equal to cp
+    :param bpl: concentration breakpoint that is less than or equal to cp
+    :returns: AQI value
+    """
     a = ih - il
     b = bph - bpl
     c = cp - bpl
     return ((a / b) * c) + il
 
 def get_aqi_from_pm(pm, humidity):
-    # https://cfpub.epa.gov/si/si_public_record_report.cfm?Lab=CEMM&dirEntryId=353088
+    """
+    Calculate AQI from PM2.5 and humidity values.
+    First, applies US EPA's conversion on PM2.5 value via equation from
+        https://cfpub.epa.gov/si/si_public_record_report.cfm?Lab=CEMM&dirEntryId=353088.
+    Then, calculates AQI value via Purple Air's formula
+        (https://community.purpleair.com/t/how-to-calculate-the-us-epa-pm2-5-aqi).
+
+    :param pm: PM2.5
+    :param humidity: humidity
+    :returns: AQI value
+    """
+    # Apply US EPA conversion on pm2.5 value
     if pm >= 260:
         new_pm = 2.966 + 0.69*pm + 8.84*(10**(-4))*(pm**2)
     elif pm >= 210:
@@ -30,7 +50,7 @@ def get_aqi_from_pm(pm, humidity):
     else:
         new_pm = pm
 
-    # https://community.purpleair.com/t/how-to-calculate-the-us-epa-pm2-5-aqi
+    # Apply Purple Air's formula on their AQI calculations
     if new_pm is None or new_pm > 1000:
         return "-"
     if new_pm < 0:
@@ -61,9 +81,20 @@ def get_aqi_from_pm(pm, humidity):
 
 
 def get_sensor_indices():
+    """
+    Returns relevant sensors for analysis.
+    
+    :returns: list of sensor indices
+    """
     return TEMP_SENSOR_IDXS
 
 def generate_request_url(sensor_idx_arr):
+    """
+    Generate request URL.
+    
+    :param sensor_idx_arr: list of sensor indices
+    :returns: request URL for Purple Air API
+    """
     ret_url = ROOT_URL
 
     # attach API key
@@ -83,6 +114,12 @@ def generate_request_url(sensor_idx_arr):
 
 
 def filter_aqi(all_aqi):
+    """
+    Filter out sensors where AQI value is <= 50.
+
+    :param all_aqi: dict of sensor names mapped to AQI values
+    :returns: dict of sensor names mapped to AQI values
+    """
     impt_aqi = {}
 
     for k, v in all_aqi.items():
@@ -92,10 +129,19 @@ def filter_aqi(all_aqi):
     return impt_aqi
 
 def send_alert(impt_aqi):
+    """
+    Send alert regarding sensors where AQI > 50.
+
+    :param impt_aqi: dict of sensor names mapped to AQI values
+    :returns: TODO: need to link to external service
+    """
     print("Test send alert: " + str(impt_aqi))
 
 
 def main():
+    """
+    Main function.
+    """
     sensors = get_sensor_indices()
     
     req_url = generate_request_url(sensors)
@@ -119,5 +165,6 @@ def main():
 
     else:
         print("Error in main: Got a(n) {response.status_code} error response.")
+
 
 main()
