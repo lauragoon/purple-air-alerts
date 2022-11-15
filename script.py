@@ -13,6 +13,7 @@ from googleapiclient.errors import HttpError
 API_KEY = ""
 ROOT_URL = "https://api.purpleair.com/v1/sensors"
 LONG_LAT_BOUNDS = ()
+AQI_THRESHOLD = 50
 
 GMAIL_API_SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
 FROM_EMAIL = ""
@@ -119,7 +120,7 @@ def generate_request_url(lng_lat_bounds):
 
 def filter_aqi(all_aqi):
     """
-    Filter out sensors where AQI value is <= 50.
+    Filter out sensors where AQI value is <= AQI_THRESHOLD.
 
     :param all_aqi: dict of sensor names mapped to AQI values
     :returns: dict of sensor names mapped to AQI values
@@ -127,14 +128,14 @@ def filter_aqi(all_aqi):
     impt_aqi = {}
 
     for k, v in all_aqi.items():
-        if v > 50:
+        if v > AQI_THRESHOLD:
             impt_aqi[k] = v
 
     return impt_aqi
 
 def send_alert(impt_aqi):
     """
-    Send alert regarding sensors where AQI > 50.
+    Send alert regarding sensors where AQI > AQI_THRESHOLD.
 
     :param impt_aqi: dict of sensor names mapped to AQI values
     :returns: message object, including message ID
