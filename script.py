@@ -1,6 +1,7 @@
 import requests
 
 ROOT_URL = "https://api.purpleair.com/v1/sensors"
+LONG_LAT_BOUNDS = ()
 API_KEY = ""
 
 
@@ -78,22 +79,6 @@ def get_aqi_from_pm(pm, humidity):
     else:
         return None
 
-def get_location_bounds():
-    """
-    Grab longitude/latitude bounds to determine which sensors are relevant via
-        user input.
-    
-    :returns: 4-tuple of (north west longitude, north west latitude,
-                          south east longitude, south east latitude)
-    """
-
-    nwlng = input("Enter your north west longitude bound: ")
-    nwlat = input("Enter your north west latitude bound: ")
-    selng = input("Enter your south east longitude bound: ")
-    selat = input("Enter your south east latitude bound: ")
-
-    return (nwlng, nwlat, selng, selat)
-
 def generate_request_url(lng_lat_bounds):
     """
     Generate request URL.
@@ -147,8 +132,7 @@ def main():
     """
     Main function.
     """
-    lng_lat_bounds = get_location_bounds()
-    req_url = generate_request_url(lng_lat_bounds)
+    req_url = generate_request_url(LONG_LAT_BOUNDS)
     response = requests.get(req_url)
 
     # got expected response
