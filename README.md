@@ -1,5 +1,5 @@
 # PurpleAir Alerts 🌥️
-Get alerts when your nearest PurpleAir sensor(s) reach(es) a certain air quality index (AQI) threshold.
+Get alerts when your nearest PurpleAir sensors reach a certain air quality index (AQI) threshold.
 
 ## How to run this
 1. Setup access to the [PurpleAir](https://api.purpleair.com) and [Gmail](https://developers.google.com/gmail/api) APIs.
